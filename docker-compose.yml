@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: dimatech-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      dimatech_net:
+
+  backend:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    container_name: backend-dimatech
+    depends_on:
+      - postgres
+    networks:
+      dimatech_net:
+
+networks:
+  dimatech_net:
+
+volumes:
+  postgres_data:
