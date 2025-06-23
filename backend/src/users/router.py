@@ -21,7 +21,13 @@ from src.crud import (
 )
 from src.database import get_db
 from src.models import UserRole
-from src.users.exeptions import dont_have_permission, email_is_registered, invalid_signature
+from src.users.exeptions import (
+    dont_have_permission,
+    email_is_registered,
+    invalid_signature,
+    user_dont_exist,
+    transaction_exists
+)
 from src.users.schemas import (
     Transaction,
     UserBase,
@@ -63,9 +69,12 @@ async def update_user(user_id: int, user: UserUpdate, current_user: UserBase = D
     if current_user.role != UserRole.ADMIN:
         raise dont_have_permission
     exists_user = await get_user_by_id(user_id, db)
-    if exists_user:
-        raise email_is_registered  # FIXME: replace this HTTPEXEPTION
-    return await update_user(user_id, user, db)
+    if not exists_user:
+        raise user_dont_exist
+    updated_user = await update_user(user_id, user, current_user, db)
+    if updated_user:
+        return updated_user
+    raise email_is_registered
 
 
 @user_router.delete("/{user_id}")
@@ -74,8 +83,8 @@ async def delete_user(user_id: int, current_user: UserBase = Depends(get_current
     if current_user.role != UserRole.ADMIN:
         raise dont_have_permission
     if await delete_user_by_id(user_id, db):
-        return {"message": "OK"}
-    raise {"message": "User not found"}
+        return {"message": f"Пользователь с ID {user_id} был удален."}
+    raise user_dont_exist
 
 
 @user_router.get("/me", response_model=UserPublic)
@@ -105,6 +114,6 @@ async def create_transaction(transaction: Transaction, db: AsyncSession = Depend
         await create_account(transaction.user_id, transaction.account_id, db)
     if await add_transaction(transaction, db):
         await increase_amount(transaction.account_id, transaction.amount, db)
-        return {"message": "OK"}
+        return {"message": f"Транзакция с ID {transaction.transaction_id} была проведена."}
 
-    return {"message": "error"}
+    return transaction_exists

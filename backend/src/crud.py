@@ -48,7 +48,7 @@ async def update_user(user_id: int, user_updata, db: AsyncSession):
         elif key == "email":
             existing_email = await get_user_by_email(user.email, db)
             if existing_email:
-                return None  # FIXME: maybe replace this
+                return None
         setattr(user, key, value)
     await db.commit()
     await db.refresh(user)
@@ -58,10 +58,10 @@ async def update_user(user_id: int, user_updata, db: AsyncSession):
 async def delete_user_by_id(user_id: int, db: AsyncSession):
     user = await get_user_by_id(user_id, db)
     if not user:
-        return None
+        return False
     await db.execute(delete(User).where(User.id == user_id))
     await db.commit()
-    return "OK"  # FIXME: Пересмотреть логику
+    return True
 
 
 async def get_accounts(user_id: int, db: AsyncSession):
