@@ -64,14 +64,14 @@ async def create_user(user: UserCreate, current_user: UserBase = Depends(get_cur
 
 
 @user_router.patch("/{user_id}", response_model=UserPublic)
-async def update_user(user_id: int, user: UserUpdate, current_user: UserBase = Depends(get_current_user),
-                      db: AsyncSession = Depends(get_db)):
+async def update_users(user_id: int, user: UserUpdate, current_user: UserBase = Depends(get_current_user),
+                       db: AsyncSession = Depends(get_db)):
     if current_user.role != UserRole.ADMIN:
         raise dont_have_permission
     exists_user = await get_user_by_id(user_id, db)
     if not exists_user:
         raise user_dont_exist
-    updated_user = await update_user(user_id, user, current_user, db)
+    updated_user = await update_user(user_id, user, db)
     if updated_user:
         return updated_user
     raise email_is_registered

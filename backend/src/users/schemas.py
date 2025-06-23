@@ -28,7 +28,7 @@ class TransactionPublic(BaseModel):
 
 
 class UserBase(BaseModel):
-    id: int
+    pass
 
 
 class UserCreate(UserBase):
