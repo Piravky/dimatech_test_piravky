@@ -1,8 +1,9 @@
-from fastapi import FastAPI, APIRouter, Depends
+from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 import uvicorn
 
+from src.routers import router_v1
 app = FastAPI(
     title='DimaTech Ltd',
     description='Тестовое задание на позицию Python разработчик by piravky',
@@ -10,6 +11,7 @@ app = FastAPI(
     docs_url='/api/docs/',
 )
 
+app.include_router(router_v1)
 
 app.add_middleware(
     CORSMiddleware,
