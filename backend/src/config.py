@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     USER: str
     PASSWORD: str
     DATABASE: str
+    SIGNATURE_SIGN: str
 
     @property
     def DATABASE_URL(self) -> str:
