@@ -9,7 +9,7 @@ from src.auth.config import auth_settings
 from src.auth.constants import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE
 from src.auth.exeptions import credentials_exception
 from src.auth.utils import validate_token_type
-from src.crud import get_user
+from src.crud import get_user_by_id
 from src.database import get_db
 from src.models import User
 
@@ -49,7 +49,7 @@ def create_jwt(
 def create_access_token(user: User) -> str:
     jwt_payload = {
         "sub": str(user.id),
-        "username": user.username
+        "email": user.email
     }
     return create_jwt(
         token_type=ACCESS_TOKEN_TYPE,
@@ -89,8 +89,8 @@ def get_auth_user_from_token_of_type(token_type: str):
 
 
 async def get_user_by_token_sub(payload: dict, db: AsyncSession):
-    id_user: str | None = payload.get("sub")
-    if user := await get_user(id_user, db):
+    id_user: int | None = int(payload.get("sub"))
+    if user := await get_user_by_id(id_user, db):
         return user
     raise credentials_exception
 
