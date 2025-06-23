@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordRequestForm, HTTPBearer
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from src.auth.schemas import Token
@@ -9,17 +9,16 @@ from src.auth.config import password_manager
 from src.database import get_db
 from src.models import User
 
-http_bearer = HTTPBearer(auto_error=False)
+
 auth_router = APIRouter(
     tags=["auth"],
-    dependencies=[Depends(http_bearer)],
 )
 
 
 
 @auth_router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)) -> Token:
-    result = await db.execute(select(User).filter(User.username == form_data.username))
+    result = await db.execute(select(User).filter(User.email == form_data.username))
     user = result.scalars().first()
     if not user:
         raise invalid_auth_exception
