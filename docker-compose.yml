@@ -15,6 +15,8 @@ services:
       context: backend
       dockerfile: Dockerfile
     restart: unless-stopped
+    ports:
+      - 8000:8000
     container_name: backend-dimatech
     depends_on:
       - postgres
