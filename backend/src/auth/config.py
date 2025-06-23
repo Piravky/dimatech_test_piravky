@@ -1,6 +1,7 @@
 import os
-from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from passlib.context import CryptContext
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AuthSettings(BaseSettings):

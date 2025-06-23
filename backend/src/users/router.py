@@ -77,6 +77,7 @@ async def delete_user(user_id: int, current_user: UserBase = Depends(get_current
         return {"message": "OK"}
     raise {"message": "User not found"}
 
+
 @user_router.get("/me", response_model=UserPublic)
 async def get_me(current_user: UserBase = Depends(get_current_user)):
     return current_user

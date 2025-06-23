@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
-from src.models import User, Account, Transaction
 from src.auth.config import password_manager
+from src.models import User, Account, Transaction
 
 
 async def get_users(db: AsyncSession):
@@ -14,13 +14,16 @@ async def get_users(db: AsyncSession):
     users = result.scalars().all()
     return users
 
+
 async def get_user_by_id(user_id: int, db: AsyncSession):
     result = await db.execute(select(User).filter(User.id == user_id))
     return result.scalars().first()
 
+
 async def get_user_by_email(email: EmailStr, db: AsyncSession):
     result = await db.execute(select(User).filter(User.email == email))
     return result.scalars().first()
+
 
 async def add_user(user, db: AsyncSession):
     new_user = User(
@@ -34,6 +37,7 @@ async def add_user(user, db: AsyncSession):
     await db.refresh(new_user)
     return new_user
 
+
 async def update_user(user_id: int, user_updata, db: AsyncSession):
     user = await get_user_by_id(user_id, db)
 
@@ -44,11 +48,12 @@ async def update_user(user_id: int, user_updata, db: AsyncSession):
         elif key == "email":
             existing_email = await get_user_by_email(user.email, db)
             if existing_email:
-                return None #FIXME: maybe replace this
+                return None  # FIXME: maybe replace this
         setattr(user, key, value)
     await db.commit()
     await db.refresh(user)
     return user
+
 
 async def delete_user_by_id(user_id: int, db: AsyncSession):
     user = await get_user_by_id(user_id, db)
@@ -56,15 +61,18 @@ async def delete_user_by_id(user_id: int, db: AsyncSession):
         return None
     await db.execute(delete(User).where(User.id == user_id))
     await db.commit()
-    return "OK" #FIXME: Пересмотреть логику
+    return "OK"  # FIXME: Пересмотреть логику
+
 
 async def get_accounts(user_id: int, db: AsyncSession):
     result = await db.execute(select(Account).filter(Account.user_id == user_id))
     return result.scalars().all()
 
+
 async def get_account_by_id(account_id: int, db: AsyncSession):
     result = await db.execute(select(Account).filter(Account.id == account_id))
     return result.scalars().first()
+
 
 async def increase_amount(account_id: int, amount: int, db: AsyncSession):
     account = await get_account_by_id(account_id, db)
@@ -73,6 +81,7 @@ async def increase_amount(account_id: int, amount: int, db: AsyncSession):
     await db.commit()
     await db.refresh(account)
     return account
+
 
 async def create_account(user_id: int, account_id: int, db: AsyncSession):
     new_account = Account(
@@ -85,9 +94,11 @@ async def create_account(user_id: int, account_id: int, db: AsyncSession):
     await db.refresh(new_account)
     return new_account
 
+
 async def get_account_by_id_filtered_user_id(user_id: int, account_id: int, db: AsyncSession):
-    result = await db.execute(select(Account).filter(Account.id == account_id,  Account.user_id == user_id))
+    result = await db.execute(select(Account).filter(Account.id == account_id, Account.user_id == user_id))
     return result.scalars().first()
+
 
 async def add_transaction(transaction, db: AsyncSession):
     exists_transaction = await get_transactions_by_id(transaction.transaction_id, db)
@@ -104,9 +115,11 @@ async def add_transaction(transaction, db: AsyncSession):
     await db.refresh(new_transaction)
     return new_transaction
 
+
 async def get_transactions(user_id: int, db: AsyncSession):
     result = await db.execute(select(Transaction).filter(Transaction.user_id == user_id))
     return result.scalars().all()
+
 
 async def get_transactions_by_id(transaction_id: UUID4, db: AsyncSession):
     result = await db.execute(select(Transaction).filter(Transaction.id == transaction_id))

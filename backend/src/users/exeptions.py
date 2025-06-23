@@ -1,6 +1,5 @@
 from fastapi import HTTPException, status
 
-
 dont_have_permission = HTTPException(
     status_code=status.HTTP_403_FORBIDDEN,
     detail="You don't have permission to do this action",

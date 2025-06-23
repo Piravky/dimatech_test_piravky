@@ -1,5 +1,6 @@
 import uuid
 from enum import Enum as PyEnum
+
 from sqlalchemy import (
     Column,
     String,
@@ -13,20 +14,23 @@ from sqlalchemy.orm import relationship
 
 from src.database import Base
 
+
 class UserRole(PyEnum):
     USER = "user"
     ADMIN = "admin"
+
 
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String, unique=True)
     password = Column(String, nullable=False)
-    full_name= Column(String, nullable=False)
+    full_name = Column(String, nullable=False)
     role = Column(Enum(UserRole), nullable=False, default=UserRole.USER)
 
     accounts = relationship("Account", back_populates="user")
     transactions = relationship("Transaction", back_populates="user")
+
 
 class Account(Base):
     __tablename__ = "accounts"

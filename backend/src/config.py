@@ -1,5 +1,7 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     HOST: str
@@ -18,5 +20,6 @@ class Settings(BaseSettings):
         env_prefix='DB_',
         extra='allow'
     )
+
 
 settings = Settings()
